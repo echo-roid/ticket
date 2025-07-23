@@ -1,11 +1,11 @@
 {
-  "name": "vercel-upload-app",
+  "name": "id-login-system",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1", 
-    "start": "node api/index.js"
+    "start": "node ./index.js"
   },
   "keywords": [],
   "author": "",
