@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Upload Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      text-align: center;
+      padding: 50px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    #message {
+      margin-top: 20px;
+      color: green;
+    }
+    #uploadSection {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔐 Admin Panel</h2>
+
+  <!-- Login Form -->
+  <div id="loginSection">
+    <input type="text" id="username" placeholder="Username" /><br>
+    <input type="password" id="password" placeholder="Password" /><br>
+    <button onclick="login()">Login</button>
+    <div id="loginError" style="color:red;"></div>
+  </div>
+
+  <!-- Upload Section -->
+  <div id="uploadSection">
+    <h3>📁 Upload Folder</h3>
+    <input type="file" id="folderInput" webkitdirectory directory multiple />
+    <button onclick="uploadFolder()">Upload Folder</button>
+    <div id="message"></div>
+  </div>
+
+  <script>
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.status === 200) {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("uploadSection").style.display = "block";
+      } else {
+        document.getElementById("loginError").textContent = "Invalid credentials";
+      }
+    }
+
+    async function uploadFolder() {
+      const input = document.getElementById('folderInput');
+      const files = input.files;
+      if (!files.length) return alert('Please select a folder');
+
+      const firstPath = files[0].webkitRelativePath;
+      const folderName = firstPath.split('/')[0];
+      console.log("Uploading folder:", folderName);
+
+      const formData = new FormData();
+      formData.append('folderName', folderName);
+      for (const file of files) {
+        formData.append('files', file, file.webkitRelativePath);
+      }
+
+      const res = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      document.getElementById('message').textContent = data.message;
+    }
+  </script>
+</body>
+</html>
